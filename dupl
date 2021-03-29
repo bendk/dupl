@@ -29,12 +29,12 @@ def main():
 @main.command()
 def full():
     "Perform a full backup"
-    subprocess.run(['duplicity', 'full', SOURCE_DIR, url()])
+    subprocess.run(['duplicity', 'full', '--progress', SOURCE_DIR, url()])
 
 @main.command()
 def incr():
     "Perform an incremental backup"
-    subprocess.run(['duplicity', 'incremental', SOURCE_DIR, url()])
+    subprocess.run(['duplicity', 'incremental', '--progress', SOURCE_DIR, url()])
 
 @main.command()
 def verify():
