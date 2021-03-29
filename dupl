@@ -1,0 +1,55 @@
+#!/usr/bin/python3
+
+import subprocess
+import sys
+
+import click
+
+SOURCE_DIR = '/home/ben/Documents'
+KEY_ID = '000397ca71378450000000002'
+KEY_ENTRY_NAME = 'keys/backblaze'
+
+def get_api_key():
+    cmd = ['gopass', 'show', KEY_ENTRY_NAME]
+    result = subprocess.run(cmd, stdout=subprocess.PIPE)
+    return result.stdout.decode('utf8').strip()
+
+def url():
+    api_key = get_api_key()
+    return f'b2://{KEY_ID}:{api_key}@bdk-documents/documents/'
+
+def main(args):
+    print(args)
+    print(get_api_key())
+
+@click.group()
+def main():
+    pass
+
+@main.command()
+def full():
+    "Perform a full backup"
+    subprocess.run(['duplicity', 'full', SOURCE_DIR, url()])
+
+@main.command()
+def incr():
+    "Perform an incremental backup"
+    subprocess.run(['duplicity', 'incremental', SOURCE_DIR, url()])
+
+@main.command()
+def verify():
+    "Verify backup data"
+    subprocess.run(['duplicity', 'verify', url()])
+
+@main.command()
+def ls():
+    "List backup collections"
+    subprocess.run(['duplicity', 'collection-status', url()])
+
+@main.command(name='list-files')
+def list_files():
+    "List backed-up files"
+    subprocess.run(['duplicity', 'list-current-files', url()])
+
+if __name__ == '__main__':
+    main()
